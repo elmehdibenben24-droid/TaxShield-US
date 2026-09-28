@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US 1099, S-Corp & 50-State Tax Shield Vault (2026 CPA Edition)</title>
+  <meta name="description" content="Interactive US 50-State Paycheck Calculator, S-Corp vs LLC Tax Optimizer, Schedule C Write-Off Builder, and Instant PDF + Excel Dossier." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #090d16; color: #f8fafc; }
+    .glass-card { background: rgba(17, 24, 39, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    input[type="range"] { accent-color: #10b981; }
+    
+    @media print {
+      body { background: #ffffff !important; color: #0f172a !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+    }
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="min-h-screen pb-16">
+
+  <!-- Top US Trust Bar -->
+  <div class="no-print bg-emerald-600/20 border-b border-emerald-500/30 text-emerald-300 text-xs sm:text-sm py-2 px-4 text-center font-medium">
+    🇺🇸 2026 IRS Schedule C, S-Corp Election & 50-State Tax Engine — Instant Browser Dossier (100% Private)
+  </div>
+
+  <!-- Header -->
+  <header class="no-print max-w-6xl mx-auto px-4 pt-8 pb-6 text-center">
+    <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-3">
+      2026 CPA-Grade Tax & Entity Optimizer
+    </span>
+    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-3">
+      US Paycheck, <span class="text-emerald-400">1099 & S-Corp</span> Tax Shield
+    </h1>
+    <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
+      Calculate your real 50-state take-home pay, uncover thousands in legal Schedule C & S-Corp tax savings, and export your complete 2026 CPA-Ready PDF Dossier & Excel Bookkeeping Kit.
+    </p>
+  </header>
+
+  <!-- Main Interactive Dashboard -->
+  <main class="no-print max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-6 mt-2">
+    
+    <!-- Left Column: Inputs + Write-Off Builder (5 cols) -->
+    <section class="lg:col-span-5 space-y-6">
+      
+      <!-- Step 1: Income & State -->
+      <div class="glass-card rounded-2xl p-6 shadow-2xl space-y-5">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+          <span>⚙️</span> 1. Income & US State Profile
+        </h2>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tax Structure Mode</label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button id="btnW2" onclick="setMode('W2')" class="py-2.5 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">
+              W-2 Employee
+            </button>
+            <button id="btn1099" onclick="setMode('1099')" class="py-2.5 text-sm font-semibold rounded-lg bg-amber-500 text-slate-950 font-bold transition">
+              1099 / LLC / Freelance
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <label class="font-medium text-slate-300">Annual Gross Income ($)</label>
+            <span id="incomeDisplay" class="font-bold text-emerald-400">$110,000</span>
+          </div>
+          <input id="incomeInput" type="number" value="110000" min="5000" max="2000000" step="1000"
+            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-semibold focus:outline-none focus:border-emerald-500 mb-2"
+            oninput="syncIncome(this.value)" />
+          <input id="incomeRange" type="range" value="110000" min="15000" max="350000" step="2500" class="w-full"
+            oninput="syncIncome(this.value)" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Your US State</label>
+            <select id="stateSelect" onchange="calculateAll()"
+              class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">IRS Filing Status</label>
+            <select id="filingSelect" onchange="calculateAll()"
+              class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+              <option value="single">Single</option>
+              <option value="married">Married Filing Jointly</option>
+              <option value="hoh">Head of Household</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300">Solo 401(k) / IRA (%)</span>
+              <span id="k401Val" class="font-bold text-emerald-400">6%</span>
+            </div>
+            <input id="k401Input" type="range" value="6" min="0" max="25" step="1" class="w-full" oninput="calculateAll()" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300">HSA Medical ($)</span>
+              <span id="hsaVal" class="font-bold text-emerald-400">$1,500</span>
+            </div>
+            <input id="hsaInput" type="range" value="1500" min="0" max="8300" step="100" class="w-full" oninput="calculateAll()" />
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800">
+          <label class="block text-xs font-medium text-slate-400 mb-1">🚚 Compare Relocation Tax Savings With:</label>
+          <select id="compareStateSelect" onchange="calculateAll()"
+            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-emerald-300 focus:outline-none focus:border-emerald-500">
+          </select>
+        </div>
+      </div>
+
+      <!-- Step 2: Interactive IRS Schedule C Write-Off Finder -->
+      <div class="glass-card rounded-2xl p-6 shadow-2xl space-y-4 border border-amber-500/30">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-amber-400 flex items-center gap-2">
+              <span>🧾</span> 2. Schedule C Write-Off Builder
+            </h2>
+            <p class="text-[11px] text-slate-400">Slide to deduct legitimate US business expenses:</p>
+          </div>
+          <span id="totalWriteOffBadge" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-extrabold text-xs">
+            $0 Deducted
+          </span>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-semibold text-slate-200 mb-1">
+              <span>🚗 Business Miles Driven ($0.67/mi IRS Rate)</span>
+              <span id="milesDollar" class="text-emerald-400">$5,360</span>
+            </div>
+            <input id="milesInput" type="range" value="8000" min="0" max="40000" step="500" class="w-full" oninput="calculateAll()" />
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span id="milesCount">8,000 miles/yr</span>
+              <span>Schedule C Line 9</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-semibold text-slate-200 mb-1">
+              <span>🏠 Home Office Deduction ($5/sq ft Simplified)</span>
+              <span id="officeDollar" class="text-emerald-400">$1,250</span>
+            </div>
+            <input id="officeInput" type="range" value="250" min="0" max="300" step="10" class="w-full" oninput="calculateAll()" />
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span id="officeSqft">250 sq ft (Max 300)</span>
+              <span>Form 8829 / Line 30</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-semibold text-slate-200 mb-1">
+              <span>💻 Cell Phone, Fiber Internet, SaaS & Gear ($)</span>
+              <span id="techDollar" class="text-emerald-400">$3,000</span>
+            </div>
+            <input id="techInput" type="range" value="3000" min="0" max="15000" step="200" class="w-full" oninput="calculateAll()" />
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>Section 179 Equipment + Utilities</span>
+              <span>Line 13, 18 & 25</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-semibold text-slate-200 mb-1">
+              <span>🍽️ Marketing, Business Meals (50%) & Health Ins.</span>
+              <span id="otherDedDollar" class="text-emerald-400">$2,400</span>
+            </div>
+            <input id="otherDedInput" type="range" value="2400" min="0" max="25000" step="200" class="w-full" oninput="calculateAll()" />
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>Ads, client meals, self-employed medical</span>
+              <span>Line 8, 24b & Sch 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Right Column: Live Results + S-Corp Optimizer + $29/$30 Pro Vault (7 cols) -->
+    <section class="lg:col-span-7 space-y-6">
+      
+      <!-- Top Summary KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-500">
+          <p class="text-xs text-slate-400 uppercase font-semibold">Annual Net Take-Home</p>
+          <p id="resNetAnnual" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">$0</p>
+          <p id="resEffectiveRate" class="text-xs text-emerald-400 mt-1">Effective Tax: 0%</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
+          <p class="text-xs text-slate-400 uppercase font-semibold">Monthly In-Pocket</p>
+          <p id="resNetMonthly" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">$0</p>
+          <p id="resBiWeekly" class="text-xs text-blue-400 mt-1">Bi-Weekly: $0</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-500">
+          <p class="text-xs text-slate-400 uppercase font-semibold">Write-Off Shield Saved</p>
+          <p id="resTaxSaved" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">$0</p>
+          <p id="resQuarterly" class="text-xs text-slate-300 mt-1">Quarterly IRS Est: $0</p>
+        </div>
+      </div>
+
+      <!-- NEW HIGH-VALUE FEATURE: LLC vs. S-Corp Election Tax Loophole Calculator -->
+      <div class="glass-card rounded-2xl p-5 border border-emerald-500/40 bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-900">
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-extrabold text-[11px] uppercase">CPA Strategy</span>
+            <h3 class="text-sm sm:text-base font-bold text-white">🏛️ LLC vs. S-Corp Election (Form 2553) Loophole</h3>
+          </div>
+          <span id="scorpVerdictBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300"></span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Standard 1099 SE Tax (15.3%)</span>
+            <p id="scorpOldSe" class="text-base font-extrabold text-rose-400 mt-0.5">$0 /yr</p>
+          </div>
+          <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+            <span class="text-slate-400">With S-Corp (50% Salary Split)</span>
+            <p id="scorpNewSe" class="text-base font-extrabold text-emerald-400 mt-0.5">$0 /yr</p>
+          </div>
+          <div class="bg-emerald-950/50 p-3 rounded-xl border border-emerald-500/40">
+            <span class="text-emerald-300 font-semibold">Extra Annual S-Corp Savings</span>
+            <p id="scorpSavings" class="text-lg font-extrabold text-white mt-0.5">+$0 /yr</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tax Breakdown Visual Bar -->
+      <div class="glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <h3 class="text-base font-bold text-white">📊 Exact Breakdown of Your US Dollars</h3>
+          <span id="relocationBadge" class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-medium"></span>
+        </div>
+
+        <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden flex">
+          <div id="barNet" class="bg-emerald-500 h-full transition-all duration-300" style="width: 70%"></div>
+          <div id="barFed" class="bg-rose-500 h-full transition-all duration-300" style="width: 12%"></div>
+          <div id="barFica" class="bg-amber-500 h-full transition-all duration-300" style="width: 8%"></div>
+          <div id="barState" class="bg-purple-500 h-full transition-all duration-300" style="width: 5%"></div>
+          <div id="barRetire" class="bg-blue-500 h-full transition-all duration-300" style="width: 5%"></div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 text-xs">
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1"></span>
+            <span class="text-slate-400">Net Pocket</span>
+            <p id="brkNet" class="font-bold text-white text-sm mt-1">$0</p>
+          </div>
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <span class="inline-block w-2 h-2 rounded-full bg-rose-500 mr-1"></span>
+            <span class="text-slate-400">Federal IRS</span>
+            <p id="brkFed" class="font-bold text-white text-sm mt-1">$0</p>
+          </div>
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1"></span>
+            <span id="ficaLabel" class="text-slate-400">SE Tax (15.3%)</span>
+            <p id="brkFica" class="font-bold text-white text-sm mt-1">$0</p>
+          </div>
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+            <span class="inline-block w-2 h-2 rounded-full bg-purple-500 mr-1"></span>
+            <span class="text-slate-400">State Tax</span>
+            <p id="brkState" class="font-bold text-white text-sm mt-1">$0</p>
+          </div>
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 col-span-2 sm:col-span-1">
+            <span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
+            <span class="text-slate-400">401k + HSA</span>
+            <p id="brkRetire" class="font-bold text-blue-400 text-sm mt-1">$0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Built-In Direct Monetization ($29 CPA Vault vs $350 CPA Fee) -->
+      <div class="rounded-2xl p-6 bg-gradient-to-br from-emerald-950 via-slate-900 to-amber-950/60 border-2 border-emerald-500/60 shadow-2xl space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span id="vipStatusBadge" class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-extrabold uppercase">
+              🔒 Complete CPA Audit & S-Corp Vault ($29 One-Time)
+            </span>
+            <span class="text-xs line-through text-slate-500 font-semibold">$350 CPA Fee</span>
+          </div>
+          <span class="text-xs text-emerald-400 font-semibold">⚡ Instant Browser Export</span>
+        </div>
+
+        <div>
+          <h4 class="text-xl font-extrabold text-white">
+            Download Your Complete 2026 IRS Audit-Defense PDF Dossier & Automated Excel Bookkeeper
+          </h4>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">
+            Why pay an accountant $350+? Export your personalized <strong>IRS Form 1040-ES Quarterly Payment Vouchers</strong>, <strong>S-Corp Reasonable Salary Split Worksheet</strong>, <strong>Schedule C Audit-Proof Checklist</strong>, and <strong>Excel/CSV Tax Tracker</strong> right now.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <button onclick="handleProAction('pdf')"
+            class="w-full py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition">
+            <span>📄</span> Export Full CPA PDF Dossier ($29)
+          </button>
+          <button onclick="handleProAction('csv')"
+            class="w-full py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition">
+            <span>📊</span> Download Excel / CSV Bookkeeper
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Direct $29 Payment & Passcode Modal -->
+  <div id="unlockModal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-emerald-500/50 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <div>
+          <span class="text-xs font-bold uppercase text-emerald-400">Save $320+ on CPA Fees Today</span>
+          <h3 class="text-xl font-extrabold text-white mt-1">Unlock Your 2026 Pro Tax Vault</h3>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+
+      <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200 space-y-1">
+        <p class="font-bold">✅ Included in your one-time $29 unlock:</p>
+        <p>• Custom 2026 Schedule C & Form 1040-ES Quarterly PDF Dossier</p>
+        <p>• LLC vs. S-Corp Reasonable Salary Tax Savings Breakdown</p>
+        <p>• Ready-to-File Excel / CSV Bookkeeping & Deduction Tracker</p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-slate-400 font-semibold">Step 1: One-Time Direct Payment</span>
+          <span class="text-emerald-400 font-bold">Passcode: VIP2026</span>
+        </div>
+        <a id="directPayLink" href="https://paypal.me/" target="_blank" rel="noopener"
+          class="block w-full text-center py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm transition shadow-lg">
+          💳 Pay $29 Directly (PayPal / Card) →
+        </a>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-slate-300">Step 2: Enter Unlock Passcode</label>
+        <div class="flex gap-2">
+          <input id="passcodeInput" type="text" placeholder="Enter VIP2026"
+            class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white uppercase focus:outline-none focus:border-emerald-500" />
+          <button onclick="verifyPasscode()"
+            class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition">
+            Unlock
+          </button>
+        </div>
+        <p id="codeError" class="text-xs text-rose-400 hidden">Invalid code. Enter VIP2026!</p>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
+        <span class="text-[11px] text-slate-400">Owner Preview Mode:</span>
+        <button onclick="instantDemoUnlock()" class="text-xs font-bold text-amber-400 hover:underline">
+          ⚡ Instant Owner Test Unlock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- BUILT-IN PRINTABLE CPA PDF DOSSIER -->
+  <!-- ======================================================================= -->
+  <section id="pdfDossier" class="print-only max-w-4xl mx-auto p-8 text-slate-900 space-y-6">
+    <div class="border-b-2 border-slate-900 pb-4 flex justify-between items-end">
+      <div>
+        <h1 class="text-2xl font-extrabold uppercase tracking-tight">2026 US CPA Tax Shield, Schedule C & S-Corp Dossier</h1>
+        <p class="text-xs text-slate-600">Prepared via US 1099 & S-Corp Tax Shield Vault • IRS Pub 334, Form 1040-ES & Form 2553 Reference</p>
+      </div>
+      <div class="text-right text-xs">
+        <p id="pdfDate" class="font-bold"></p>
+        <p id="pdfProfile" class="text-slate-600"></p>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold uppercase bg-slate-100 p-2 border-l-4 border-slate-900 mb-3">1. Executive Cash Flow & Tax Shield Summary</h2>
+      <div class="grid grid-cols-4 gap-3 text-xs border border-slate-300 rounded-lg p-3">
+        <div>
+          <p class="text-slate-500">Gross Annual Income</p>
+          <p id="pdfGross" class="text-base font-extrabold mt-0.5">$0</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Total Schedule C + Pre-Tax</p>
+          <p id="pdfDeductions" class="text-base font-extrabold text-emerald-700 mt-0.5">$0</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Total IRS + State Tax</p>
+          <p id="pdfTotalTax" class="text-base font-extrabold text-rose-700 mt-0.5">$0</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Est. S-Corp Extra Savings</p>
+          <p id="pdfScorpSave" class="text-base font-extrabold text-emerald-700 mt-0.5">$0</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold uppercase bg-slate-100 p-2 border-l-4 border-slate-900 mb-3">2. 2026 IRS Quarterly Estimated Tax Schedule (Form 1040-ES)</h2>
+      <table class="w-full text-xs border-collapse border border-slate-300">
+        <thead>
+          <tr class="bg-slate-100 text-left">
+            <th class="border border-slate-300 p-2">Quarter</th>
+            <th class="border border-slate-300 p-2">Income Period</th>
+            <th class="border border-slate-300 p-2">Official IRS Due Date</th>
+            <th class="border border-slate-300 p-2">Recommended Quarterly Reserve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="border border-slate-300 p-2 font-bold">Q1</td>
+            <td class="border border-slate-300 p-2">Jan 1 – Mar 31, 2026</td>
+            <td class="border border-slate-300 p-2 font-semibold">April 15, 2026</td>
+            <td id="pdfQ1" class="border border-slate-300 p-2 font-bold">$0</td>
+          </tr>
+          <tr>
+            <td class="border border-slate-300 p-2 font-bold">Q2</td>
+            <td class="border border-slate-300 p-2">Apr 1 – May 31, 2026</td>
+            <td class="border border-slate-300 p-2 font-semibold">June 15, 2026</td>
+            <td id="pdfQ2" class="border border-slate-300 p-2 font-bold">$0</td>
+          </tr>
+          <tr>
+            <td class="border border-slate-300 p-2 font-bold">Q3</td>
+            <td class="border border-slate-300 p-2">Jun 1 – Aug 31, 2026</td>
+            <td class="border border-slate-300 p-2 font-semibold">September 15, 2026</td>
+            <td id="pdfQ3" class="border border-slate-300 p-2 font-bold">$0</td>
+          </tr>
+          <tr>
+            <td class="border border-slate-300 p-2 font-bold">Q4</td>
+            <td class="border border-slate-300 p-2">Sep 1 – Dec 31, 2026</td>
+            <td class="border border-slate-300 p-2 font-semibold">January 15, 2027</td>
+            <td id="pdfQ4" class="border border-slate-300 p-2 font-bold">$0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold uppercase bg-slate-100 p-2 border-l-4 border-slate-900 mb-3">3. Audit-Defense Schedule C Write-Off Checklist</h2>
+      <div class="grid grid-cols-2 gap-4 text-xs">
+        <div class="border border-slate-300 rounded p-3 space-y-1.5">
+          <p class="font-bold underline">Operations, Vehicle & Home Office</p>
+          <p>☐ <strong>Line 9 (Mileage):</strong> $0.67/mile for business driving (Keep mileage log).</p>
+          <p>☐ <strong>Line 30 (Home Office):</strong> $5/sq ft up to 300 sq ft or actual % of rent/utilities.</p>
+          <p>☐ <strong>Line 25 (Utilities):</strong> Business % of Cell Phone & Fiber Internet bills.</p>
+          <p>☐ <strong>Line 13 (Sec 179 Depreciation):</strong> Laptops, cameras, desks, equipment.</p>
+        </div>
+        <div class="border border-slate-300 rounded p-3 space-y-1.5">
+          <p class="font-bold underline">S-Corp, Marketing, Travel & Medical</p>
+          <p>☐ <strong>Form 2553 (S-Corp):</strong> Split net profit into W-2 salary + K-1 distribution to cut 15.3% SE tax.</p>
+          <p>☐ <strong>Line 8 (Advertising):</strong> Meta/Google Ads, SaaS tools, domain & hosting.</p>
+          <p>☐ <strong>Line 24b (Meals):</strong> 50% of business meals with clients or while traveling.</p>
+          <p>☐ <strong>Form 1040 Sch 1:</strong> 100% of Self-Employed Health, Dental & Vision Insurance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // =========================================================================
+    // ⚙️ OWNER CONFIGURATION ($29 أو بدلها لـ $30 كيما بغيتي)
+    // =========================================================================
+    const OWNER_CONFIG = {
+      PRICE_DISPLAY: "$29",                          // تقدر تردها "$30" هنا
+      PAYMENT_URL: "https://paypal.me/YOUR_LINK/29", // رابط الخلاص المباشر ديالك بـ 29 أو 30 دولار
+      UNLOCK_CODE: "VIP2026",
+      FREE_MODE: false
+    };
+
+    const usStates = {
+      "TX": { name: "Texas (0% State Tax)", rate: 0.00 },
+      "FL": { name: "Florida (0% State Tax)", rate: 0.00 },
+      "NV": { name: "Nevada (0% State Tax)", rate: 0.00 },
+      "WA": { name: "Washington (0% State Tax)", rate: 0.00 },
+      "TN": { name: "Tennessee (0% State Tax)", rate: 0.00 },
+      "WY": { name: "Wyoming (0% State Tax)", rate: 0.00 },
+      "SD": { name: "South Dakota (0% State Tax)", rate: 0.00 },
+      "AK": { name: "Alaska (0% State Tax)", rate: 0.00 },
+      "NH": { name: "New Hampshire (0% Wage Tax)", rate: 0.00 },
+      "CA": { name: "California", rate: 0.068 },
+      "NY": { name: "New York", rate: 0.062 },
+      "NJ": { name: "New Jersey", rate: 0.055 },
+      "IL": { name: "Illinois", rate: 0.0495 },
+      "PA": { name: "Pennsylvania", rate: 0.0307 },
+      "OH": { name: "Ohio", rate: 0.032 },
+      "GA": { name: "Georgia", rate: 0.0539 },
+      "NC": { name: "North Carolina", rate: 0.045 },
+      "MI": { name: "Michigan", rate: 0.0425 },
+      "VA": { name: "Virginia", rate: 0.052 },
+      "MA": { name: "Massachusetts", rate: 0.05 },
+      "AZ": { name: "Arizona", rate: 0.025 },
+      "CO": { name: "Colorado", rate: 0.044 },
+      "MD": { name: "Maryland", rate: 0.048 },
+      "OR": { name: "Oregon", rate: 0.078 },
+      "MN": { name: "Minnesota", rate: 0.064 },
+      "WI": { name: "Wisconsin", rate: 0.051 },
+      "MO": { name: "Missouri", rate: 0.045 },
+      "IN": { name: "Indiana", rate: 0.0305 },
+      "SC": { name: "South Carolina", rate: 0.054 },
+      "AL": { name: "Alabama", rate: 0.045 },
+      "LA": { name: "Louisiana", rate: 0.038 },
+      "KY": { name: "Kentucky", rate: 0.04 },
+      "OK": { name: "Oklahoma", rate: 0.045 },
+      "CT": { name: "Connecticut", rate: 0.055 },
+      "UT": { name: "Utah", rate: 0.0465 },
+      "IA": { name: "Iowa", rate: 0.038 },
+      "AR": { name: "Arkansas", rate: 0.044 },
+      "KS": { name: "Kansas", rate: 0.052 },
+      "MS": { name: "Mississippi", rate: 0.047 },
+      "NM": { name: "New Mexico", rate: 0.045 },
+      "NE": { name: "Nebraska", rate: 0.052 },
+      "ID": { name: "Idaho", rate: 0.058 },
+      "HI": { name: "Hawaii", rate: 0.072 },
+      "ME": { name: "Maine", rate: 0.058 },
+      "RI": { name: "Rhode Island", rate: 0.047 },
+      "MT": { name: "Montana", rate: 0.054 },
+      "DE": { name: "Delaware", rate: 0.052 },
+      "ND": { name: "North Dakota", rate: 0.022 },
+      "VT": { name: "Vermont", rate: 0.056 },
+      "WV": { name: "West Virginia", rate: 0.048 },
+      "DC": { name: "Washington D.C.", rate: 0.065 }
+    };
+
+    let currentMode = '1099';
+    let isVipUnlocked = OWNER_CONFIG.FREE_MODE || localStorage.getItem('us_tax_vip_unlocked') === 'true';
+    let pendingAction = null;
+    let lastCalcData = {};
+
+    function initApp() {
+      document.getElementById('directPayLink').href = OWNER_CONFIG.PAYMENT_URL;
+      const stateSelect = document.getElementById('stateSelect');
+      const compareSelect = document.getElementById('compareStateSelect');
+      const sortedKeys = Object.keys(usStates).sort((a, b) => usStates[a].name.localeCompare(usStates[b].name));
+      
+      sortedKeys.forEach(code => {
+        stateSelect.add(new Option(usStates[code].name, code));
+        compareSelect.add(new Option(usStates[code].name, code));
+      });
+      stateSelect.value = "CA";
+      compareSelect.value = "TX";
+      updateVipBadge();
+      calculateAll();
+    }
+
+    function updateVipBadge() {
+      const badge = document.getElementById('vipStatusBadge');
+      if (isVipUnlocked) {
+        badge.innerText = "✅ CPA Pro Vault Unlocked — Unlimited Exports";
+        badge.className = "px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-extrabold uppercase";
+      }
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      const btnW2 = document.getElementById('btnW2');
+      const btn1099 = document.getElementById('btn1099');
+
+      if (mode === 'W2') {
+        btnW2.className = "py-2.5 text-sm font-semibold rounded-lg bg-emerald-600 text-white transition";
+        btn1099.className = "py-2.5 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition";
+      } else {
+        btn1099.className = "py-2.5 text-sm font-semibold rounded-lg bg-amber-500 text-slate-950 font-bold transition";
+        btnW2.className = "py-2.5 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition";
+      }
+      calculateAll();
+    }
+
+    function syncIncome(val) {
+      const num = Math.max(0, Number(val) || 0);
+      document.getElementById('incomeInput').value = num;
+      document.getElementById('incomeRange').value = Math.min(350000, num);
+      document.getElementById('incomeDisplay').innerText = '$' + num.toLocaleString('en-US');
+      calculateAll();
+    }
+
+    function calcFederalTax(taxableIncome, filing) {
+      if (taxableIncome <= 0) return 0;
+      const brackets = filing === 'married' ? [
+        { limit: 23200, rate: 0.10 },
+        { limit: 94300, rate: 0.12 },
+        { limit: 201050, rate: 0.22 },
+        { limit: 383900, rate: 0.24 },
+        { limit: 487450, rate: 0.32 },
+        { limit: 731200, rate: 0.35 },
+        { limit: Infinity, rate: 0.37 }
+      ] : [
+        { limit: 11600, rate: 0.10 },
+        { limit: 47150, rate: 0.12 },
+        { limit: 100525, rate: 0.22 },
+        { limit: 191950, rate: 0.24 },
+        { limit: 243725, rate: 0.32 },
+        { limit: 609350, rate: 0.35 },
+        { limit: Infinity, rate: 0.37 }
+      ];
+
+      let tax = 0;
+      let prevLimit = 0;
+      for (const b of brackets) {
+        if (taxableIncome > prevLimit) {
+          const taxableInBracket = Math.min(taxableIncome - prevLimit, b.limit - prevLimit);
+          tax += taxableInBracket * b.rate;
+          prevLimit = b.limit;
+        } else {
+          break;
+        }
+      }
+      return tax;
+    }
+
+    function fmt(n) {
+      return '$' + Math.round(n).toLocaleString('en-US');
+    }
+
+    function calculateAll() {
+      const gross = Number(document.getElementById('incomeInput').value) || 0;
+      const stateCode = document.getElementById('stateSelect').value;
+      const compareCode = document.getElementById('compareStateSelect').value;
+      const filing = document.getElementById('filingSelect').value;
+      const k401Pct = Number(document.getElementById('k401Input').value) || 0;
+      const hsaAmt = Number(document.getElementById('hsaInput').value) || 0;
+
+      const miles = Number(document.getElementById('milesInput').value) || 0;
+      const milesDed = Math.round(miles * 0.67);
+      const officeSqft = Number(document.getElementById('officeInput').value) || 0;
+      const officeDed = officeSqft * 5;
+      const techDed = Number(document.getElementById('techInput').value) || 0;
+      const otherDed = Number(document.getElementById('otherDedInput').value) || 0;
+
+      document.getElementById('milesCount').innerText = miles.toLocaleString('en-US') + ' miles/yr';
+      document.getElementById('milesDollar').innerText = fmt(milesDed);
+      document.getElementById('officeSqft').innerText = officeSqft + ' sq ft';
+      document.getElementById('officeDollar').innerText = fmt(officeDed);
+      document.getElementById('techDollar').innerText = fmt(techDed);
+      document.getElementById('otherDedDollar').innerText = fmt(otherDed);
+
+      const totalWriteOffs = currentMode === '1099' ? (milesDed + officeDed + techDed + otherDed) : 0;
+      document.getElementById('totalWriteOffBadge').innerText = currentMode === '1099' ? `${fmt(totalWriteOffs)} Deducted` : `Switch to 1099 Mode`;
+
+      document.getElementById('k401Val').innerText = k401Pct + '%';
+      document.getElementById('hsaVal').innerText = fmt(hsaAmt);
+
+      const k401Dollars = Math.min(23500, gross * (k401Pct / 100));
+      const preTaxContributions = k401Dollars + hsaAmt;
+      const netBusinessIncome = Math.max(0, gross - totalWriteOffs);
+
+      let ficaTax = 0;
+      if (currentMode === 'W2') {
+        const ssWageBase = Math.min(gross, 168600);
+        ficaTax = (ssWageBase * 0.062) + (gross * 0.0145);
+        document.getElementById('ficaLabel').innerText = 'FICA (7.65%)';
+      } else {
+        const seTaxable = netBusinessIncome * 0.9235;
+        const ssBase = Math.min(seTaxable, 168600);
+        ficaTax = (ssBase * 0.124) + (seTaxable * 0.029);
+        document.getElementById('ficaLabel').innerText = 'SE Tax (15.3%)';
+      }
+
+      // S-Corp Election Calculation (50% Reasonable Salary vs 50% K-1 Distribution)
+      const scorpSalary = netBusinessIncome * 0.50;
+      const scorpFica = (Math.min(scorpSalary, 168600) * 0.124) + (scorpSalary * 0.029);
+      const scorpSavings = currentMode === '1099' ? Math.max(0, Math.round(ficaTax - scorpFica)) : 0;
+
+      document.getElementById('scorpOldSe').innerText = fmt(ficaTax) + ' /yr';
+      document.getElementById('scorpNewSe').innerText = fmt(scorpFica) + ' /yr';
+      document.getElementById('scorpSavings').innerText = '+' + fmt(scorpSavings) + ' /yr';
+      document.getElementById('scorpVerdictBadge').innerText = scorpSavings > 2500 ? `🔥 S-Corp Highly Recommended!` : `Standard LLC Sufficient`;
+
+      const stdDeduction = filing === 'married' ? 29200 : (filing === 'hoh' ? 21900 : 14600);
+      const halfSeDeduction = currentMode === '1099' ? (ficaTax * 0.5) : 0;
+
+      const taxableFedIncome = Math.max(0, netBusinessIncome - preTaxContributions - stdDeduction - halfSeDeduction);
+      const fedTax = calcFederalTax(taxableFedIncome, filing);
+
+      const stateTaxable = Math.max(0, netBusinessIncome - preTaxContributions);
+      const stateRate = usStates[stateCode].rate;
+      const stateTax = stateTaxable * stateRate;
+
+      const totalTax = fedTax + ficaTax + stateTax;
+      const netAnnual = Math.max(0, netBusinessIncome - totalTax - preTaxContributions);
+      const netMonthly = netAnnual / 12;
+
+      const rawFica = currentMode === '1099' ? ((Math.min(gross * 0.9235, 168600) * 0.124) + (gross * 0.9235 * 0.029)) : ficaTax;
+      const rawFed = calcFederalTax(Math.max(0, gross - stdDeduction), filing);
+      const rawState = gross * stateRate;
+      const shieldSaved = Math.max(0, Math.round((rawFica + rawFed + rawState) - totalTax));
+
+      document.getElementById('resNetAnnual').innerText = fmt(netAnnual);
+      document.getElementById('resNetMonthly').innerText = fmt(netMonthly);
+      document.getElementById('resBiWeekly').innerText = 'Bi-Weekly: ' + fmt(netAnnual / 26);
+      document.getElementById('resTaxSaved').innerText = fmt(shieldSaved) + '/yr';
+      document.getElementById('resQuarterly').innerText = `Quarterly IRS Est: ${fmt(totalTax / 4)}`;
+
+      const effRate = gross > 0 ? ((totalTax / gross) * 100).toFixed(1) : 0;
+      document.getElementById('resEffectiveRate').innerText = `Effective Tax Rate: ${effRate}%`;
+
+      document.getElementById('brkNet').innerText = fmt(netAnnual);
+      document.getElementById('brkFed').innerText = fmt(fedTax);
+      document.getElementById('brkFica').innerText = fmt(ficaTax);
+      document.getElementById('brkState').innerText = fmt(stateTax);
+      document.getElementById('brkRetire').innerText = fmt(preTaxContributions);
+
+      const base = Math.max(1, netBusinessIncome);
+      document.getElementById('barNet').style.width = ((netAnnual / base) * 100) + '%';
+      document.getElementById('barFed').style.width = ((fedTax / base) * 100) + '%';
+      document.getElementById('barFica').style.width = ((ficaTax / base) * 100) + '%';
+      document.getElementById('barState').style.width = ((stateTax / base) * 100) + '%';
+      document.getElementById('barRetire').style.width = ((preTaxContributions / base) * 100) + '%';
+
+      const compareTax = stateTaxable * usStates[compareCode].rate;
+      const diff = Math.round(stateTax - compareTax);
+      const badge = document.getElementById('relocationBadge');
+      if (stateCode === compareCode) {
+        badge.innerText = `Comparing same state (${stateCode})`;
+      } else if (diff > 0) {
+        badge.innerText = `🔥 Moving to ${compareCode} saves you ${fmt(diff)}/yr in State Tax!`;
+        badge.className = "text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold";
+      } else {
+        badge.innerText = `${stateCode} saves you ${fmt(Math.abs(diff))}/yr vs ${compareCode}`;
+        badge.className = "text-xs px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 font-semibold";
+      }
+
+      document.getElementById('pdfDate').innerText = 'Generated: ' + new Date().toLocaleDateString('en-US');
+      document.getElementById('pdfProfile').innerText = `${currentMode} • State: ${stateCode} • Filing: ${filing.toUpperCase()}`;
+      document.getElementById('pdfGross').innerText = fmt(gross);
+      document.getElementById('pdfDeductions').innerText = fmt(totalWriteOffs + preTaxContributions);
+      document.getElementById('pdfTotalTax').innerText = fmt(totalTax);
+      document.getElementById('pdfScorpSave').innerText = '+' + fmt(scorpSavings) + '/yr';
+      const qPayment = fmt(totalTax / 4);
+      document.getElementById('pdfQ1').innerText = qPayment;
+      document.getElementById('pdfQ2').innerText = qPayment;
+      document.getElementById('pdfQ3').innerText = qPayment;
+      document.getElementById('pdfQ4').innerText = qPayment;
+
+      lastCalcData = {
+        gross, stateCode, filing, currentMode,
+        miles, milesDed, officeSqft, officeDed, techDed, otherDed,
+        totalWriteOffs, k401Dollars, hsaAmt, preTaxContributions,
+        fedTax, ficaTax, stateTax, totalTax, netAnnual, netMonthly, shieldSaved, scorpSavings
+      };
+    }
+
+    function handleProAction(type) {
+      if (isVipUnlocked) {
+        executeExport(type);
+      } else {
+        pendingAction = type;
+        const modal = document.getElementById('unlockModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('unlockModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function verifyPasscode() {
+      const val = document.getElementById('passcodeInput').value.trim().toUpperCase();
+      if (val === OWNER_CONFIG.UNLOCK_CODE.toUpperCase()) {
+        unlockSuccess();
+      } else {
+        document.getElementById('codeError').classList.remove('hidden');
+      }
+    }
+
+    function instantDemoUnlock() {
+      unlockSuccess();
+    }
+
+    function unlockSuccess() {
+      isVipUnlocked = true;
+      localStorage.setItem('us_tax_vip_unlocked', 'true');
+      updateVipBadge();
+      closeModal();
+      if (pendingAction) {
+        executeExport(pendingAction);
+        pendingAction = null;
+      }
+    }
+
+    function executeExport(type) {
+      if (type === 'pdf') {
+        window.print();
+      } else if (type === 'csv') {
+        downloadBuiltInCSV();
+      }
+    }
+
+    function downloadBuiltInCSV() {
+      const d = lastCalcData;
+      const rows = [
+        ["2026 US CPA TAX SHIELD, SCHEDULE C & S-CORP TRACKER", ""],
+        ["Generated Date", new Date().toLocaleDateString('en-US')],
+        ["Tax Structure Mode", d.currentMode],
+        ["US State", d.stateCode],
+        ["IRS Filing Status", d.filing.toUpperCase()],
+        ["", ""],
+        ["--- INCOME & PRE-TAX SHIELDS ---", "ANNUAL AMOUNT ($)"],
+        ["Gross Annual Income", d.gross],
+        ["Solo 401(k) / Traditional IRA Contribution", Math.round(d.k401Dollars)],
+        ["HSA Pre-Tax Medical Contribution", Math.round(d.hsaAmt)],
+        ["", ""],
+        ["--- IRS SCHEDULE C 1099 WRITE-OFFS ---", "DEDUCTION ($)"],
+        [`Business Mileage (${d.miles} miles @ $0.67/mi)`, d.milesDed],
+        [`Simplified Home Office (${d.officeSqft} sq ft @ $5/sqft)`, d.officeDed],
+        ["Phone, Fiber Internet, SaaS & Section 179 Gear", d.techDed],
+        ["Ads, Business Meals (50%) & Self-Employed Medical", d.otherDed],
+        ["TOTAL SCHEDULE C WRITE-OFFS", d.totalWriteOffs],
+        ["", ""],
+        ["--- TAX LIABILITY & S-CORP LOOPHOLE ---", "ANNUAL AMOUNT ($)"],
+        ["Federal IRS Income Tax", Math.round(d.fedTax)],
+        ["Standard 1099 Self-Employment Tax (15.3%)", Math.round(d.ficaTax)],
+        ["Extra Annual Savings if Elected as S-Corp (Form 2553)", Math.round(d.scorpSavings)],
+        [`${d.stateCode} State Income Tax`, Math.round(d.stateTax)],
+        ["TOTAL COMBINED TAX", Math.round(d.totalTax)],
+        ["ESTIMATED QUARTERLY IRS 1040-ES PAYMENT", Math.round(d.totalTax / 4)],
+        ["TOTAL TAX SAVED BY SHIELDS & WRITE-OFFS", Math.round(d.shieldSaved)],
+        ["", ""],
+        ["--- NET TAKE-HOME & MONTHLY CASH FLOW ---", "AMOUNT ($)"],
+        ["Annual Net Take-Home Pay", Math.round(d.netAnnual)],
+        ["Monthly Net In-Pocket", Math.round(d.netMonthly)]
+      ];
+
+      let csvContent = "data:text/csv;charset=utf-8," 
+        + rows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `US_CPA_Tax_Shield_${d.stateCode}_2026.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
